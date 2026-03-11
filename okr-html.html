@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>People Team 2026 OKR Tracker</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', -apple-system, sans-serif; background: #f1f0ec; }
+    select, input, button { font-family: inherit; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect, useMemo } = React;
+
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvOSa8mah1WbpEdXmUCtpVj5IWOqwqKpEO8Re2WpzNsUriIAz4jipKUO7hXRSr0KEg/exec";
+
+    const FALLBACK = [
+      {lyftObj:"Increase Margin: Control Largest Costs",priority:"Build Workforce Planning Capability",initiative:"Build Long Term WFP Strategy/Execute short term WFP strategy",func:"People Strategy & Programs",plt:"Callie Seidman",eplt:"Erin Ashton",goal:"Create a durable, multi-year strategic WFP framework and implement tactical strategy to meet current talent demands.",annualKR:"Achieve 90% ELT alignment on resource reallocation and maintain <5% budget deviation on critical roles.",q1KR:"Finalize Long-Term WFP Strategy and establish short-term WFP strategy for 2026.",q1Jan:"Yellow",q1Feb:"Yellow",q1Mar:"",q1Note:"With Shana coming on board we have transitioned the Talent Blueprint from conceptual planning to active prioritization.",q2KR:"Execute short-term WFP strategy to fill 75% of critical roles while maintaining <5% budget deviation.",q3KR:"Socialize WFP outputs with 100% of ELT members and achieve 90% alignment on resource reallocation.",q4KR:"Establish 3 key WFP metrics and achieve 100% data quality in dashboards."},
+      {lyftObj:"Increase Margin: Control Largest Costs",priority:"Build Workforce Planning Capability",initiative:"Lyft Europe People Integration",func:"People Strategy & Programs",plt:"Dana Rasmussen",eplt:"Ricardo Perez",goal:"Build one unified Lyft Europe people organization that integrates teams across acquisitions.",annualKR:"Establish a unified Lyft Europe People organization with a single operating model.",q1KR:"Assess current structures and processes across all Europe People teams.",q1Jan:"Green",q1Feb:"",q1Mar:"",q1Note:"Q1 is our planning phase—finalizing People Integration milestones, task mapping, and the Workday Phase 1 integration approach.",q2KR:"Design harmonized People processes and establish shared ways of working.",q3KR:"Roll out the unified operating model and begin implementing harmonized processes.",q4KR:"Drive consistent adoption of the new processes and ways of working."},
+      {lyftObj:"Increase Margin: Control Largest Costs",priority:"Build Workforce Planning Capability",initiative:"Manage Open Headcount in Workday",func:"HR Ops",plt:"Despina Ferraro",eplt:"Rachel Trainer",goal:"Enhance Workday functionality to allow the business to more swiftly manage and self-serve open headcount and budget changes.",annualKR:"Achieve 70% reduction in Zendesk tickets and reduce average time for headcount/budget changes by 25%.",q1KR:"Secure architecture review and sign-off for Open Headcount Management WD enhancements.",q1Jan:"Red",q1Feb:"Red",q1Mar:"",q1Note:"Due to HR Ops and People Tech focus on the Freenow integration, building self-service functionality has been deprioritized.",q2KR:"Launch Open Headcount Management (WD) enhancements to all business units.",q3KR:"Achieve 70% business self-service rate for open headcount/budget changes in WD.",q4KR:"Achieve 90% business self-service rate for open headcount/budget changes in WD."},
+      {lyftObj:"Increase Margin: Control Largest Costs",priority:"Build Workforce Planning Capability",initiative:"Pilot Talent Reviews and Implement in Workday Co-wide",func:"TME",plt:"Denise Bertuccelli",eplt:"Marina Sideli",goal:"Launch talent management framework + Talent Review process within Workday.",annualKR:"Identify high performers/high potential team members through a 9-box talent review deployment.",q1KR:"Pilot Talent Reviews + Succession Planning framework with at least 2 Orgs.",q1Jan:"Green",q1Feb:"Green",q1Mar:"",q1Note:"Pilots being facilitated as a train-the-trainer method. Aim to complete by end of April with a May 11 PDT VP Calibration Session.",q2KR:"Set up system and prepare for co-wide launch of Talent Reviews + Succession Planning.",q3KR:"Launch Talent Review + Succession Planning process ahead of Annual/Workforce Planning.",q4KR:"Utilize WFP data to identify leadership successors + 3 key skill gaps."},
+      {lyftObj:"Increase Margin: Control Largest Costs",priority:"Adopt an Adaptive Location Strategy",initiative:"Location Portfolio Management/Scale Toronto",func:"People Strategy & Programs",plt:"Callie Seidman",eplt:"Erin Ashton",goal:"Support the accelerated growth and scaling of the Toronto location and manage the portfolio of office locations.",annualKR:"Realize cost savings and achieve Toronto growth targets.",q1KR:"Establish governance and Location Portfolio Management reporting structure.",q1Jan:"Green",q1Feb:"Green",q1Mar:"",q1Note:"Real Estate and Total Rewards are conducting rigorous cost analysis. Prioritizing data integrity to provide a definitive recommendation in early April.",q2KR:"Provide PDT with Quarterly Location Health Snapshot for top 5 strategic locations.",q3KR:"Achieve target headcount growth metric for Toronto while maintaining ≤5% cost-per-hire increase.",q4KR:"Realize $X million in annualized cost avoidance/savings."},
+      {lyftObj:"Increase Margin: Control Largest Costs",priority:"Evolve our Culture & Employer Brand",initiative:"Define Hiring Philosophy & TA Mission",func:"Talent",plt:"Quincy Amekuedi",eplt:"Hannah Rose",goal:"Establish a clear Hiring Philosophy and TA Mission to formally codify what and how we hire.",annualKR:"Achieve a 20% improvement in recruiter confidence in cultural fit screening.",q1KR:"Complete in-depth research and finalize draft hiring philosophy and TA mission proposal.",q1Jan:"Yellow",q1Feb:"Green",q1Mar:"",q1Note:"Close to establishing a TA Mission statement. Follow up work will be on how this translates to a hiring philosophy.",q2KR:"Finalize the Hiring Philosophy & TA Mission statement, securing PDT approval.",q3KR:"Embed the new philosophy into 100% of core hiring process documentation.",q4KR:"Establish the quality of hire metric to track impact."},
+      {lyftObj:"Increase Margin: Control Largest Costs",priority:"Evolve our Culture & Employer Brand",initiative:"Codify, Measure, & Amplify Culture – Culture & Belonging Index",func:"TME",plt:"Denise Bertuccelli",eplt:"Jasmine Darnell",goal:"Implement a codified, values-based culture infrastructure and maturity framework.",annualKR:"Define Lyft's cultural maturity progression and achieve full XFN alignment on the Culture Maturity Model.",q1KR:"Finalize the XFN advisory team structure and charter.",q1Jan:"Green",q1Feb:"",q1Mar:"",q1Note:"Finalization of the XFN advisory team structure and charter is on track. Culture & Belonging Index framework scheduled to be drafted in March.",q2KR:"Define and finalize the culture integration and maturity roadmap.",q3KR:"Finalize culture KPI design and pilot the new Culture & Belonging Index.",q4KR:"Deploy the new Culture & Belonging Index via the bi-annual engagement survey."},
+      {lyftObj:"Increase Margin: Control Largest Costs",priority:"Evolve our Culture & Employer Brand",initiative:"Codify, Measure, & Amplify Culture – EVP",func:"TME",plt:"Denise Bertuccelli",eplt:"Jasmine Darnell",goal:"Deploy an Employee Value Proposition (EVP) that highlights core values and positions the company as an AI leader.",annualKR:"Validate the need for a distinct EVP and establish the EVP Trust Score baseline.",q1KR:"Complete research and finalize the draft employee-facing EVP proposal.",q1Jan:"Green",q1Feb:"",q1Mar:"",q1Note:"Research phase completed. Alignment meetings with TA and Marketing have commenced.",q2KR:"Secure 100% PLT/PDT approval for the EVP.",q3KR:"Create and finalize a clear integration and communication plan for the EVP.",q4KR:"Launch the EVP Trust Score via the engagement survey."},
+      {lyftObj:"Increase Margin: Control Largest Costs",priority:"Evolve our Culture & Employer Brand",initiative:"Codify, Measure, & Amplify Culture – Awards & Advocacy",func:"TME",plt:"Denise Bertuccelli",eplt:"Jasmine Darnell",goal:"Execute a high-impact strategy focused on securing third-party culture awards.",annualKR:"Secure 3 third-party awards; achieve 100% executive leader participation in advocacy.",q1KR:"Submit applications for Great Place to Work, PEOPLE Companies that Care, and Disability:IN.",q1Jan:"Yellow",q1Feb:"",q1Mar:"",q1Note:"At risk due to budget constraints. Cannot certify for GPTW or PEOPLE Companies that Care. Proceeding with Disability:IN.",q2KR:"Submit application for Fortune Best Workplaces.",q3KR:"Execute Day of Service. Secure commitment from 10 executive leaders.",q4KR:"Submit HRC's Corporate Equality Index application."},
+      {lyftObj:"Increase Margin: Control Largest Costs",priority:"Evolve our Culture & Employer Brand",initiative:"Codify, Measure, & Amplify Culture – Internal Comms",func:"TME",plt:"Denise Bertuccelli",eplt:"Leslie Zodikoff",goal:"Evolve and implement QOQ Roadmap + co-wide meeting strategy.",annualKR:"Increase engagement survey scores across 5 key questions to Top Performing Company benchmarks.",q1KR:"Deliver Q1 Internal Comms Roadmap, 1 Pit Stop, 2 Lyft & Learns, Manager Summit.",q1Jan:"Green",q1Feb:"",q1Mar:"",q1Note:"Planning is underway and on track for Pit Stop, Lyft & Learns, Manager Summit, and Q4/full year 2025 earnings results.",q2KR:"Deliver Q2 Internal Comms Roadmap, 3 Pit Stops, 2 Lyft & Learns, LLC Summit.",q3KR:"Deliver Q3 Internal Comms Roadmap, 1 Pit Stop, 1 Lyft & Learn.",q4KR:"Deliver Q4 Internal Comms Roadmap, 2 Pit Stops, 2 Lyft & Learns."},
+      {lyftObj:"Increase Margin: Control Largest Costs",priority:"Develop Global Practices + Programming",initiative:"Standardize Global Culture – Core Talent Practices",func:"TME",plt:"Denise Bertuccelli",eplt:"Jasmine Darnell",goal:"Define clear, global, non-negotiable standards for core talent practices.",annualKR:"Successfully design and build plans for globalization of three core talent practices.",q1KR:"Build the roadmap for Onboarding, Values Adoption, and Performance Development rhythms.",q1Jan:"Green",q1Feb:"",q1Mar:"",q1Note:"M&A working group has successfully kicked off and milestones have been drafted.",q2KR:"Deliver the 'One Company' Framework and secure PLT alignment.",q3KR:"Global non-negotiable standards Playbook GTM and 'Soft Launch'.",q4KR:"Full Rollout and adoption of global non-negotiable standards Playbook."},
+      {lyftObj:"Increase Margin: Control Largest Costs",priority:"Develop Global Practices + Programming",initiative:"Standardize Global Culture – Disability Inclusion",func:"TME",plt:"Denise Bertuccelli",eplt:"Jasmine Darnell",goal:"Integrate disability inclusion practices across the global talent lifecycle.",annualKR:"Advance org maturity by implementing 3 improvement pathways, achieving 100% compliance.",q1KR:"Update accessibility maturity model to include translation.",q1Jan:"Green",q1Feb:"",q1Mar:"",q1Note:"The accessibility plan has evolved to prioritize legal requirements, aligning with M&A workstreams.",q2KR:"Implement disability inclusion integration plan for first improvement pathway.",q3KR:"Implement disability inclusion integration plan for second improvement pathway.",q4KR:"Implement disability inclusion integration plan for third improvement pathway."},
+      {lyftObj:"Increase Margin: Control Largest Costs",priority:"Develop Global Practices + Programming",initiative:"Localize Community Building – Subcultures & ERGs",func:"TME",plt:"Denise Bertuccelli",eplt:"Jasmine Darnell",goal:"Foster a cohesive organizational culture by elevating subcultures.",annualKR:"Increase the Belonging Index score from 91.5% to 93%.",q1KR:"Conduct global culture audit & needs assessment across all regional offices.",q1Jan:"Green",q1Feb:"",q1Mar:"",q1Note:"Assessment framework and audit rubric have been created. Site-level listening begins Q1/Q2.",q2KR:"Develop a community culture framework.",q3KR:"Pilot the community culture framework in the 3 prioritized WFP sites.",q4KR:"Implement the Global Belonging Tracker."},
+      {lyftObj:"Increase Margin: Control Largest Costs",priority:"Develop Global Practices + Programming",initiative:"Localize Community Building – ERG Spot Bonus",func:"TME",plt:"Denise Bertuccelli",eplt:"Jasmine Darnell",goal:"Formalize ERG leader contributions through a Spot Bonus compensation structure.",annualKR:"Boost ERG Leader Retention by 30%; Achieve 100% ERG Lead Participation.",q1KR:"Launch and operationalize the ERG Lead Spot Bonus Program across all eight ERGs.",q1Jan:"Green",q1Feb:"",q1Mar:"",q1Note:"ERG Lead Spot Bonus Program successfully launched across all eight ERGs. All positions filled.",q2KR:"Reinforce ERG Lead role expectations and 2026 KPIs.",q3KR:"Conduct mid-year feedback loops with ERG Leads and Executive Sponsors.",q4KR:"Assess impact and distribute Spot Bonuses."},
+      {lyftObj:"Increase Margin: Control Largest Costs",priority:"Develop Global Practices + Programming",initiative:"Build a Global Total Rewards Strategy – Compensation",func:"Total Rewards",plt:"Devin Grdinic",eplt:"Eric Selvin",goal:"Design and adoption of global compensation philosophy and design.",annualKR:"Alignment and implementation of global compensation design.",q1KR:"Local market review and analyses; broker data collection; preparation of core recommendations.",q1Jan:"Yellow",q1Feb:"Yellow",q1Mar:"",q1Note:"Market review and benchmarking completed. Room to grow on being more locally relevant with comp design.",q2KR:"Complete benchmarking and cost modeling; prepare recommendations with PDT, CEO and BOD.",q3KR:"Transition and communications planning; system modifications.",q4KR:"Communication and training; prepare for Jan 1, 2027 effective dates."},
+      {lyftObj:"Increase Margin: Control Largest Costs",priority:"Develop Global Practices + Programming",initiative:"Build a Global Total Rewards Strategy – Benefits",func:"Total Rewards",plt:"Devin Grdinic",eplt:"Tanner Brunsdale",goal:"Design and adoption of a global benefits strategy and framework.",annualKR:"Activation of Workday benefits administration for TMs.",q1KR:"Complete global market landscape assessment; identify harmonization opportunities.",q1Jan:"Green",q1Feb:"",q1Mar:"",q1Note:"Initiated global market benchmarking. Completed high-level comparison of Lyft and Freenow benefit programs.",q2KR:"Complete testing and transition plan; migrate core benefit offerings for CA TMs.",q3KR:"Assess additional country benefit administration; select new markets for expansion.",q4KR:"Stabilize Canada Workday benefits administration; finalize expansion roadmap."},
+      {lyftObj:"Power Platform: AI Native Co",priority:"Automate for Value",initiative:"Build AI for Interview Quality",func:"Talent",plt:"Quincy Amekuedi",eplt:"Hannah Rose",goal:"Automate routine TA tasks to increase operational efficiency.",annualKR:"Achieve 75% user adoption of new tech stack tools and reduce manual screening time by 20%.",q1KR:"Complete BrightHire rollout to all end users (100% deployment).",q1Jan:"Green",q1Feb:"Green",q1Mar:"",q1Note:"1,638 interviews conducted with BH since rollout. 68% utilization. 85% scorecards submitted within 24 hours. Continuing progress on CoderPad.",q2KR:"90% adherence to the 24 hour SLA on scorecard completion.",q3KR:"Roll out consolidated coding assessment tool, embedding in 90% of tech interview pathways.",q4KR:"Capacity and efficiency increase in the Coordination team via Goodtime platform."},
+      {lyftObj:"Power Platform: AI Native Co",priority:"Automate for Value",initiative:"Automate TME Processes",func:"TME",plt:"Denise Bertuccelli",eplt:"Soumya Dixit",goal:"Streamline TME processes via automation to shift focus to high value tasks.",annualKR:"Streamline TME processes, reducing time spent on routine tasks by 20%.",q1KR:"Finalize automation build for internal comms intake process.",q1Jan:"Green",q1Feb:"",q1Mar:"",q1Note:"Created and testing a new Internal Comms intake gem to streamline requests.",q2KR:"Achieve 99% process stability for mid-year promotions/EOY cycles.",q3KR:"Assess where additional time savings could be actualized in 2027.",q4KR:"Automate 50% of routine PDev enrollment tasks."},
+      {lyftObj:"Power Platform: AI Native Co",priority:"Automate for Value",initiative:"Enhance HR Processes",func:"HR Ops",plt:"Despina Ferraro",eplt:"Rachel Trainer",goal:"Introduce enhancements and automations to various required employee lifecycle workflows.",annualKR:"Streamline HR Ops Onboarding processes, reducing manual time spent on routine tasks by 20%.",q1KR:"Scope work/order of operations and expected completion timeline.",q1Jan:"Green",q1Feb:"Green",q1Mar:"",q1Note:"Three key projects on track: Mexico Onboarding, EIB Template review, Hire Integration updates.",q2KR:"Implement 100% of identified changes in appropriate tools/systems.",q3KR:"Reduce manual time spent on administrative/routine tasks by 20%.",q4KR:"N/A"},
+      {lyftObj:"Power Platform: AI Native Co",priority:"Automate for Value",initiative:"Experiment + Uplevel PeopleBot AI",func:"HR Ops",plt:"Despina Ferraro",eplt:"Alex Gruendl",goal:"Uplevel PeopleBot to provide more than just direct responses to questions.",annualKR:"Increase utilization of PeopleBot by 20% over the course of 2026.",q1KR:"Define 'upleveled' scope of PeopleBot, while continuing to improve current functionality.",q1Jan:"Green",q1Feb:"Green",q1Mar:"",q1Note:"Participated in first Workato demo. 7 new data sources added. Banner added to PH homepage to promote PeopleBot adoption.",q2KR:"Build out tech requirements and comms/change management plan.",q3KR:"Successfully launch PeopleBot self-service functionality on 2-3 high-volume HR Ops tasks.",q4KR:"Iterate/incorporate feedback on enhancements."},
+      {lyftObj:"Power Platform: AI Native Co",priority:"Automate for Value",initiative:"Integrate HR Systems",func:"HR Ops",plt:"Despina Ferraro",eplt:"Rachel Trainer",goal:"Selectively integrating key systems and automating additional workflows.",annualKR:"Reduce overall HR Ops manual processing time by 20% via scaled automation.",q1KR:"Introduce and stabilize Workday<>Checkr integration, implement changes to GH<>WD Integration.",q1Jan:"Green",q1Feb:"Green",q1Mar:"",q1Note:"All Freenow basic employee records loaded into Workday as of 2/26. Kainos kick off expected in April. ZD > Jira Migration underway.",q2KR:"Achieve a 99% transaction success rate on the system integrations.",q3KR:"Reduce overall HR Ops manual processing time by 20% compared to Q1 baseline.",q4KR:"N/A"},
+      {lyftObj:"Power Platform: AI Native Co",priority:"Operationalize M&A Integration",initiative:"M&A Integration Capability",func:"People Strategy & Programs",plt:"Callie Seidman",eplt:"Ricardo Perez",goal:"Build M&A expertise within the People team to consistently deliver Day 1 readiness.",annualKR:"Core People team members trained; defined roles and responsibilities; retrospective completed.",q1KR:"Document processes, identify gaps, and capture lessons learned.",q1Jan:"Green",q1Feb:"",q1Mar:"",q1Note:"Q1 focused on building foundational M&A capabilities through the Freenow integration.",q2KR:"",q3KR:"",q4KR:""},
+      {lyftObj:"Power Platform: AI Native Co",priority:"Operationalize M&A Integration",initiative:"ON HOLD: Establish a People Team Integration Playbook",func:"People Strategy & Programs",plt:"Despina Ferraro",eplt:"Ricardo Perez",goal:"Establish a centralized M&A operational structure and repeatable playbooks.",annualKR:"Successfully execute a live M&A integration with 100% Day 1 readiness.",q1KR:"Formalize the single People Team POC and secure PDT sign-off.",q1Jan:"Yellow",q1Feb:"",q1Mar:"",q1Note:"On hold — no notable updates.",q2KR:"Complete and socialize detailed integration playbooks for 3 core People Team functions.",q3KR:"Successfully execute a live M&A integration, achieving 100% Day 1 readiness.",q4KR:"Codify lessons learned and update all functional playbooks."},
+      {lyftObj:"Power Platform Growth",priority:"Invest in Continuous Career Development",initiative:"Ensure Clarity of Manager Expectations",func:"TME",plt:"Denise Bertuccelli",eplt:"Marina Sideli",goal:"Define and deploy expectations and behaviors for People Managers.",annualKR:"Establish a baseline from redesigned upward manager feedback process.",q1KR:"Define manager expectations. Utilize redesigned UMF data to measure org-level manager effectiveness.",q1Jan:"Green",q1Feb:"Green",q1Mar:"",q1Note:"Manager Summit delivered and refreshed Manager Expectations introduced. Q2 will refine and build the assessment infrastructure.",q2KR:"Refine approach to Upward Manager Feedback tool to deploy in winter 2026 cycle.",q3KR:"Map and embed manager expectations into relevant training and learning programs.",q4KR:"Deploy Manager Expectations framework across Leadership Development offerings for 2027."},
+      {lyftObj:"Power Platform Growth",priority:"Invest in Continuous Career Development",initiative:"Offer '3 E's' People Development Programs",func:"TME",plt:"Denise Bertuccelli",eplt:"Nina Remiker-Scheinman",goal:"Build a suite of tools to support the career development needs of both team members and the business.",annualKR:"Increase engagement scores: 'I can meet my career goals at Lyft' to 75%; 'I have opportunities to learn' to 85%.",q1KR:"Launch Manager Ignition and D+ Programs. Run Manager Summit. Launch Mentorship Cohort 1.",q1Jan:"Yellow",q1Feb:"Green",q1Mar:"",q1Note:"Manager Summit complete: 91% attendance. Avg satisfaction 3.9 Day 1, 4.4 sessions. Manager Ignition Cohort 1 launches March 18th.",q2KR:"Run Manager Ignition Cohort 2 with satisfaction score of 4, run LLC Summit #1.",q3KR:"Run Manager Ignition Cohorts 3 & 4, Launch Dir+ Program Cohort, run LLC Summit #2.",q4KR:"Graduate 80 managers from Ignition and 24 Directors from Dir+."},
+      {lyftObj:"Power Platform Growth",priority:"Invest in Continuous Career Development",initiative:"Continuous Recognition Programming",func:"TME",plt:"Denise Bertuccelli",eplt:"Jasmine Darnell",goal:"Implement continuous, values-aligned recognition programming that systematically rewards employees globally.",annualKR:"Increase favorable score on 'When I do my best work my contributions are celebrated' from 79% to 82%.",q1KR:"Redesign and launch global recognition programs and define use cases for manager-allocated spot bonuses.",q1Jan:"Green",q1Feb:"",q1Mar:"",q1Note:"Recognition program redesign completed. Spot bonus criteria to be drafted by end of March.",q2KR:"Successfully launch the repurposed 'ATF' recognition tool in Slack and Workday globally.",q3KR:"Achieve minimum 50% unique employee engagement with the recognition tool.",q4KR:"Achieve 85% participation across programming."},
+      {lyftObj:"Power Platform Growth",priority:"Invest in Continuous Career Development",initiative:"Top Talent Pipeline Program",func:"TME",plt:"Denise Bertuccelli",eplt:"Jasmine Darnell",goal:"Design and secure PDT approval for a Top Talent Pipeline Program.",annualKR:"Successfully complete the assessment and design phase and receive PDT approval.",q1KR:"Formalize the definition of 'Top Talent' in partnership with the full TME team.",q1Jan:"Red",q1Feb:"",q1Mar:"",q1Note:"Off track. Shifts in Talent Reviews and the D+ program have led to a repositioning. Aiming for alignment by Q2.",q2KR:"Complete the measurable needs analysis, quantifying the percentage of critical roles lacking a ready successor.",q3KR:"Draft the values-aligned program curriculum design for the pilot program.",q4KR:"Secure PDT approval for the Top Talent Pipeline Program design."},
+      {lyftObj:"Power Platform Growth",priority:"Invest in Continuous Career Development",initiative:"Deploy New Career Dev Rhythms",func:"TME",plt:"Denise Bertuccelli",eplt:"Marina Sideli",goal:"Implement tools and processes to foster a strong, continuous culture of career development.",annualKR:"Increase engagement scores: 'I receive ongoing feedback' to 75%; 'My manager provides feedback' to 85%.",q1KR:"Complete design and systems readiness for Quarterly Reflections and 360 Surveys.",q1Jan:"Yellow",q1Feb:"Green",q1Mar:"",q1Note:"New Hub set to launch March 23. Development conversation workshops scheduled for last week of March.",q2KR:"Deploy Team Member & Manager Feedback Workshop, achieving a Satisfaction Score of 4.",q3KR:"Deploy Team Member & Manager Quarterly Reflection and Conversation Resources.",q4KR:"Deploy Team Member & Manager EOY Perf Resources."},
+      {lyftObj:"Power Platform: RTB",priority:"Enable Internal Mobility",initiative:"ON HOLD: Evolve Functional Transferability of Talent Policy",func:"PBP",plt:"Dana Rasmussen",eplt:"Marina Sideli",goal:"Create policies and processes to enable the strategic movement of high-potential talent.",annualKR:"Finalize and deploy the policy/process and audit 100% of internal transfers for compliance.",q1KR:"",q1Jan:"",q1Feb:"",q1Mar:"",q1Note:"On hold.",q2KR:"",q3KR:"",q4KR:""},
+      {lyftObj:"Power Platform: RTB",priority:"Enable Internal Mobility",initiative:"Pilot Career Rotation Program",func:"TME",plt:"Dana Rasmussen",eplt:"Marina Sideli",goal:"Pilot a formal program for career rotation and internal mobility.",annualKR:"Increase the Internal Mobility fill rate for critical roles by 10% and pilot with 90% completion.",q1KR:"Complete the design, curriculum, and participant selection criteria for the Career Rotation Program.",q1Jan:"Red",q1Feb:"Red",q1Mar:"",q1Note:"Lack of clarity on what exactly this work will look like. No progress to date.",q2KR:"Complete all necessary systems/tools setup for tracking and execution.",q3KR:"Successfully pilot the program with 50 strategic high-potential team members.",q4KR:"Increase the Internal Mobility fill rate for critical roles by 10%."},
+      {lyftObj:"Power Platform: AI Native Co.",priority:"Build AI-fluent Workforce",initiative:"ON HOLD: Identify AI Capabilities + Deploy AI Upskilling",func:"TME",plt:"Denise Bertuccelli",eplt:"TBH",goal:"Design and deploy AI upskilling opportunities to build core AI competency.",annualKR:"Achieve 75% enrollment in role-specific AI Upskilling and a 20% increase in measured AI tool usage.",q1KR:"Complete the design of AI Upskilling programs and finalize content for Q2 launch.",q1Jan:"",q1Feb:"",q1Mar:"",q1Note:"On hold.",q2KR:"Launch the company-wide foundational AI Upskilling program, achieving 50% completion.",q3KR:"Expand role-specific AI Upskilling to 5 strategic functions.",q4KR:"Achieve a 20% increase in measured AI tool usage among program graduates."},
+      {lyftObj:"Power Platform: AI Native Co.",priority:"Build AI-fluent Workforce",initiative:"Embed AI in Culture – AI Champions",func:"TME",plt:"Denise Bertuccelli",eplt:"Jasmine Darnell",goal:"Establish and activate a cross-functional network of 100 employee AI Champions.",annualKR:"Build and activate a tiered network of 100 AI Champions.",q1KR:"Identify 5 AI D+ Leader Champions who are already innovating in the space.",q1Jan:"Yellow",q1Feb:"",q1Mar:"",q1Note:"Identification of 5 AI champions is at risk. Working towards having a list drafted by end of quarter.",q2KR:"AI Champions Cohort 1 (50 Champions).",q3KR:"AI Champions Cohort 2 (50 Champions).",q4KR:"Successfully recruit, train, and certify the full network of 100 AI Champions."},
+      {lyftObj:"Power Platform: AI Native Co.",priority:"Build AI-fluent Workforce",initiative:"Embed AI in Culture – ERG AI Workshops",func:"TME",plt:"Denise Bertuccelli",eplt:"Jasmine Darnell",goal:"Partner with ERGs to host targeted AI-leveraged skill development workshops.",annualKR:"Increase engagement survey scores by 1% point each on learning and tools effectiveness.",q1KR:"Conduct needs assessment across ERGs to identify AI learning gaps.",q1Jan:"Green",q1Feb:"",q1Mar:"",q1Note:"Needs assessment progressing well. Already launched an AI training session at the ERG Fair.",q2KR:"Co-design and pilot ERG-specific AI workshops with at least three ERG communities.",q3KR:"Scale the ERG AI curriculum across other ERG communities.",q4KR:"Launch the measurement mechanism to analyze participation and learning outcomes."},
+      {lyftObj:"Power Platform: AI Native Co.",priority:"Build AI-fluent Workforce",initiative:"Embed AI in Culture – Company Hackathon",func:"TME",plt:"Denise Bertuccelli",eplt:"Jasmine Darnell",goal:"Host a company-wide Hackathon with a strategic AI theme to drive bottom-up innovation.",annualKR:"Host at least 1 company-wide AI Hackathon with 100+ participants.",q1KR:"Finalize the Hackathon planning and logistics roadmap.",q1Jan:"Green",q1Feb:"",q1Mar:"",q1Note:"Hackathon planning and logistics roadmap discussed at kickoff meeting with Functional Excellence.",q2KR:"Successfully execute the AI Hackathon event in April with 100+ participants.",q3KR:"Finalize the Post-Hackathon integration review.",q4KR:"Kick off planning for the Spring 2027 Hackathon."},
+      {lyftObj:"Power Platform: AI Native Co.",priority:"Build AI-fluent Workforce",initiative:"ON HOLD: Deploy AI Talent Acquisition Strategy",func:"Talent",plt:"Quincy Amekuedi",eplt:"Hannah Rose",goal:"Develop a specific strategy for attracting talent with critical AI-related skills.",annualKR:"Reduce average time-to-hire for AI roles by 15% and increase AI-skilled applicants by 25%.",q1KR:"Develop and socialize the AI Talent Acquisition Strategy.",q1Jan:"",q1Feb:"Yellow",q1Mar:"",q1Note:"Started discussions on how to approach AI in recruiting. At very initial stages.",q2KR:"Integrate the AI Talent Acquisition Strategy with the TA Hiring Philosophy.",q3KR:"Increase the number of AI-skilled applicants in the hiring funnel by 25%.",q4KR:"Reduce the average time-to-hire for AI roles by 10%."},
+      {lyftObj:"Power Platform: RTB",priority:"Empower with People Data",initiative:"Conduct Quarterly Org Health Checks",func:"PBP",plt:"Sr. Director, PBP (TBH)",eplt:"Carl Reyes",goal:"Conduct regular, comprehensive health assessments across orgs.",annualKR:"Increase monthly unique user count of Dashboards by 30% and achieve 90% leader consumption.",q1KR:"Deploy the first iteration of the Quarterly Org Health Checks to all PDT leaders.",q1Jan:"Yellow",q1Feb:"",q1Mar:"",q1Note:"Pilots completed in January for 3 groups. Tracking toward Q2 launch. Tableau > ThoughtSpot migration in H2.",q2KR:"Integrate 2 critical data sets into the dashboards.",q3KR:"Finalize the people analytics platform and reduce average time to generate a custom report by 15%.",q4KR:"Increase the monthly unique user count of People Analytics Dashboards by 30%."},
+      {lyftObj:"Power Platform: RTB",priority:"Empower with People Data",initiative:"TA Dashboards",func:"Talent",plt:"Quincy Amekuedi",eplt:"Hannah Rose",goal:"Develop and maintain Talent Acquisition dashboards to empower leaders with accurate reporting.",annualKR:"Achieve 100% adoption rate for TA leaders and utilize dashboards to inform 3 strategic Q1 2027 hiring decisions.",q1KR:"Revamp current-state Talent dashboards by auditing and consolidating existing views.",q1Jan:"Green",q1Feb:"Green",q1Mar:"",q1Note:"Consolidated TA metrics and finalized definitions. On track to begin building new dashboards in ThoughtSpot.",q2KR:"Build the required dashboards in ThoughtSpot in collaboration with the People Analytics team.",q3KR:"Launch the new Talent dashboards in ThoughtSpot with validated metrics.",q4KR:"TA Dashboards utilized to inform 3 strategic Q1 2027 hiring decisions."},
+    ];
+
+    function parseCSV(text) {
+      const lines = text.trim().split("\n");
+      if (lines.length < 2) return null;
+      const headers = lines[0].split(",").map(h => h.replace(/^"|"$/g,"").trim());
+      return lines.slice(1).map(line => {
+        const cols = [];
+        let cur = "", inQ = false;
+        for (let i = 0; i < line.length; i++) {
+          const ch = line[i];
+          if (ch === '"') { inQ = !inQ; }
+          else if (ch === ',' && !inQ) { cols.push(cur); cur = ""; }
+          else { cur += ch; }
+        }
+        cols.push(cur);
+        const obj = {};
+        headers.forEach((h, i) => { obj[h] = (cols[i]||"").replace(/^"|"$/g,"").trim(); });
+        return obj;
+      }).filter(r => Object.values(r).some(v => v));
+    }
+
+    function mapCSVToData(parsed) {
+      return parsed.map(r => ({
+        lyftObj:  r["2026 Lyft Objective + Priority"] || "",
+        priority: r["People Team Priority"] || "",
+        initiative: r["People Team Initiative"] || "",
+        func:     r["Functional Ownership"] || "",
+        plt:      r["PLT Driver"] || "",
+        eplt:     r["EPLT Driver"] || "",
+        goal:     r["Initiative Goal"] || "",
+        annualKR: r["Key Result (Annual)"] || "",
+        q1KR:     r["Q1 Key Result (KR)"] || "",
+        q1Jan:    r["Status"] || "",
+        q1Feb:    r["Status_2"] || "",
+        q1Mar:    r["Status_3"] || "",
+        q1Note:   r["February Status Narrative (Why is it G, Y or R?)"] || r["January Status Narrative (Why is it G, Y or R?)"] || "",
+        q2KR:     r["Q2 Key Result (KR)"] || "",
+        q3KR:     r["Q3 Key Result (KR)"] || "",
+        q4KR:     r["Q4 Key Result (KR)"] || "",
+      })).filter(r => r.initiative);
+    }
+
+    const STATUS_STYLES = {
+      Green:  { bg:"#eaf4f1", text:"#2d6a4f", border:"#a8d5cc", dot:"#2d6a4f", label:"On Track" },
+      Yellow: { bg:"#fff8ec", text:"#a06000", border:"#f5d9a0", dot:"#e6a817", label:"At Risk" },
+      Red:    { bg:"#fdf0ee", text:"#c0392b", border:"#f5b8b0", dot:"#c0392b", label:"Off Track" },
+      "":     { bg:"#e7e5e5", text:"#746a6d", border:"#cfcbcc", dot:"#b9b2b4", label:"No Status" },
+    };
+
+    const LYFT_OBJS  = ["All", ...Array.from(new Set(FALLBACK.map(r => r.lyftObj)))];
+    const PRIORITIES = ["All", ...Array.from(new Set(FALLBACK.map(r => r.priority)))];
+    const FUNCS      = ["All", ...Array.from(new Set(FALLBACK.map(r => r.func)))];
+    const EPLTS      = ["All", ...Array.from(new Set(FALLBACK.map(r => r.eplt).filter(Boolean))).sort()];
+    const PLTS       = ["All", ...Array.from(new Set(FALLBACK.map(r => r.plt).filter(Boolean))).sort()];
+
+    const latestStatus = r => r.q1Feb || r.q1Jan || "";
+
+    function StatusDot({ s, size=8 }) {
+      const cfg = STATUS_STYLES[s] || STATUS_STYLES[""];
+      return React.createElement("span", { style:{ display:"inline-block", width:size, height:size, borderRadius:"50%", background:cfg.dot, flexShrink:0 } });
+    }
+
+    function StatusBadge({ s }) {
+      const cfg = STATUS_STYLES[s] || STATUS_STYLES[""];
+      return React.createElement("span", { style:{ display:"inline-flex", alignItems:"center", gap:5, padding:"2px 9px", borderRadius:6, fontSize:11, fontWeight:600, background:cfg.bg, color:cfg.text, border:`1px solid ${cfg.border}`, whiteSpace:"nowrap" } },
+        React.createElement(StatusDot, { s }),
+        cfg.label
+      );
+    }
+
+    function MonthDot({ s, month }) {
+      const cfg = STATUS_STYLES[s] || STATUS_STYLES[""];
+      return React.createElement("div", { style:{ display:"flex", flexDirection:"column", alignItems:"center", gap:2 } },
+        React.createElement("span", { style:{ display:"inline-block", width:10, height:10, borderRadius:"50%", background:s?cfg.dot:"#e7e5e5", border:`1.5px solid ${s?cfg.dot:"#cfcbcc"}` } }),
+        React.createElement("span", { style:{ fontSize:9, color:"#b9b2b4" } }, month)
+      );
+    }
+
+    function App() {
+      const [data, setData] = useState(FALLBACK);
+      const [liveStatus, setLiveStatus] = useState("loading");
+      const [lastFetched, setLastFetched] = useState(null);
+      const [lyftObj, setLyftObj]     = useState("All");
+      const [priority, setPriority]   = useState("All");
+      const [func, setFunc]           = useState("All");
+      const [eplt, setEplt]           = useState("All");
+      const [plt, setPlt]             = useState("All");
+      const [statusFilter, setStatus] = useState("All");
+      const [search, setSearch]       = useState("");
+      const [expanded, setExpanded]   = useState(null);
+      const [view, setView]           = useState("grouped");
+
+      const doFetch = () => {
+        setLiveStatus("loading");
+        const cbName = "jsonpCb_" + Date.now();
+        const script = document.createElement("script");
+        const timer = setTimeout(() => {
+          if (document.body.contains(script)) document.body.removeChild(script);
+          delete window[cbName];
+          setLiveStatus("fallback");
+          setLastFetched(new Date());
+        }, 8000);
+        window[cbName] = (csv) => {
+          clearTimeout(timer);
+          if (document.body.contains(script)) document.body.removeChild(script);
+          delete window[cbName];
+          try {
+            const parsed = parseCSV(csv);
+            if (parsed) {
+              const mapped = mapCSVToData(parsed);
+              if (mapped.length > 0) { setData(mapped); setLiveStatus("live"); }
+              else setLiveStatus("fallback");
+            } else setLiveStatus("fallback");
+          } catch { setLiveStatus("fallback"); }
+          setLastFetched(new Date());
+        };
+        script.src = `${APPS_SCRIPT_URL}?callback=${cbName}`;
+        script.onerror = () => { clearTimeout(timer); delete window[cbName]; setLiveStatus("fallback"); setLastFetched(new Date()); };
+        document.body.appendChild(script);
+      };
+
+      useEffect(() => { doFetch(); }, []);
+
+      const filtered = useMemo(() => data.filter(r => {
+        const s = latestStatus(r);
+        const q = search.toLowerCase();
+        return (statusFilter==="All"||s===statusFilter)
+          &&(lyftObj==="All"||r.lyftObj===lyftObj)
+          &&(priority==="All"||r.priority===priority)
+          &&(func==="All"||r.func===func)
+          &&(eplt==="All"||r.eplt===eplt)
+          &&(plt==="All"||r.plt===plt)
+          &&(!q||r.initiative.toLowerCase().includes(q)||r.goal.toLowerCase().includes(q)||r.plt.toLowerCase().includes(q)||r.priority.toLowerCase().includes(q));
+      }), [data,lyftObj,priority,func,eplt,plt,statusFilter,search]);
+
+      const counts = useMemo(() => {
+        const c={Green:0,Yellow:0,Red:0,"":0};
+        data.forEach(r=>{const s=latestStatus(r);c[s]=(c[s]||0)+1;});
+        return c;
+      }, [data]);
+
+      const grouped = useMemo(() => {
+        const g={};
+        filtered.forEach(r=>{if(!g[r.priority])g[r.priority]=[];g[r.priority].push(r);});
+        return Object.entries(g);
+      }, [filtered]);
+
+      const hasFilters = lyftObj!=="All"||priority!=="All"||func!=="All"||eplt!=="All"||plt!=="All"||statusFilter!=="All"||search;
+      const clearAll = () => {setLyftObj("All");setPriority("All");setFunc("All");setEplt("All");setPlt("All");setStatus("All");setSearch("");};
+      const selStyle = a => ({padding:"7px 14px",borderRadius:8,border:`1.5px solid ${a?"#cf0090":"#cfcbcc"}`,fontSize:12,fontWeight:a?700:500,color:a?"#cf0090":"#5c4d53",background:a?"rgba(207,0,144,0.06)":"#fff",cursor:"pointer"});
+      const ss = s => ({padding:"8px 11px",borderRadius:8,border:"1px solid #cfcbcc",fontSize:12,color:"#31222a",background:"#fff",cursor:"pointer"});
+
+      return (
+        <div style={{background:"#f1f0ec",minHeight:"100vh"}}>
+          <div style={{background:"linear-gradient(135deg,#0f172a 0%,#1e293b 100%)",color:"#fff",padding:"28px 32px 22px"}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:16}}>
+              <div>
+                <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:6}}>
+                  <div style={{width:8,height:8,borderRadius:"50%",background:"#cf0090"}}/>
+                  <span style={{fontSize:10,fontWeight:700,color:"#91888b",letterSpacing:"0.12em",textTransform:"uppercase"}}>Lyft · People Team</span>
+                </div>
+                <h1 style={{margin:0,fontSize:26,fontWeight:700,letterSpacing:"-0.02em"}}>2026 OKR Tracker</h1>
+                <p style={{margin:"4px 0 0",fontSize:13,color:"#91888b",display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+                  <span style={{display:"inline-flex",alignItems:"center",gap:5}}>
+                    <span style={{width:7,height:7,borderRadius:"50%",background:liveStatus==="live"?"#3d7a6b":liveStatus==="fallback"?"#e6a817":"#b9b2b4"}}/>
+                    <span>{liveStatus==="live"?"Live from Google Sheets":liveStatus==="fallback"?"Showing cached data":"Connecting..."}</span>
+                  </span>
+                  {lastFetched&&<span>· {lastFetched.toLocaleTimeString()}</span>}
+                  <button onClick={doFetch} style={{background:"rgba(255,255,255,0.08)",border:"1px solid rgba(255,255,255,0.15)",color:"#b9b2b4",borderRadius:6,padding:"2px 8px",fontSize:11,cursor:"pointer"}}>↻ Refresh</button>
+                </p>
+              </div>
+              <div style={{display:"flex",gap:20,flexWrap:"wrap"}}>
+                {[["Green","On Track"],["Yellow","At Risk"],["Red","Off Track"],["","No Status"]].map(([s,label])=>{
+                  const cfg=STATUS_STYLES[s];
+                  return <div key={s} onClick={()=>setStatus(statusFilter===s?"All":s)} style={{cursor:"pointer",textAlign:"right"}}>
+                    <div style={{display:"flex",alignItems:"center",gap:6,justifyContent:"flex-end"}}>
+                      <div style={{fontSize:24,fontWeight:700,color:statusFilter===s?cfg.dot:"#fff",lineHeight:1}}>{counts[s]}</div>
+                      <StatusDot s={s} size={10}/>
+                    </div>
+                    <div style={{fontSize:10,color:"#b9b2b4",textTransform:"uppercase",letterSpacing:"0.06em"}}>{label}</div>
+                  </div>;
+                })}
+              </div>
+            </div>
+          </div>
+
+          <div style={{padding:"20px 32px"}}>
+            <div style={{display:"flex",gap:8,marginBottom:12,flexWrap:"wrap",alignItems:"center"}}>
+              <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Search initiatives, owners..."
+                style={{flex:"1 1 200px",padding:"8px 13px",borderRadius:8,border:"1px solid #cfcbcc",fontSize:13,color:"#31222a",outline:"none",background:"#fff"}}/>
+              <select value={lyftObj} onChange={e=>setLyftObj(e.target.value)} style={ss()}>
+                {LYFT_OBJS.map(o=><option key={o} value={o}>{o==="All"?"All Lyft Objectives":o}</option>)}
+              </select>
+              <select value={priority} onChange={e=>setPriority(e.target.value)} style={ss()}>
+                {PRIORITIES.map(p=><option key={p} value={p}>{p==="All"?"All People Priorities":p}</option>)}
+              </select>
+              <select value={func} onChange={e=>setFunc(e.target.value)} style={ss()}>
+                {FUNCS.map(f=><option key={f} value={f}>{f==="All"?"All Functions":f}</option>)}
+              </select>
+              <select value={eplt} onChange={e=>setEplt(e.target.value)} style={ss()}>
+                {EPLTS.map(e=><option key={e} value={e}>{e==="All"?"All EPLT Owners":e}</option>)}
+              </select>
+              <select value={plt} onChange={e=>setPlt(e.target.value)} style={ss()}>
+                {PLTS.map(p=><option key={p} value={p}>{p==="All"?"All PLT Owners":p}</option>)}
+              </select>
+              {hasFilters&&<button onClick={clearAll} style={{padding:"8px 13px",borderRadius:8,border:"1px solid #cfcbcc",fontSize:12,color:"#746a6d",background:"#fff",cursor:"pointer"}}>Clear</button>}
+              <div style={{marginLeft:"auto",display:"flex",gap:6}}>
+                <button onClick={()=>setView("grouped")} style={selStyle(view==="grouped")}>Grouped</button>
+                <button onClick={()=>setView("table")} style={selStyle(view==="table")}>Table</button>
+              </div>
+            </div>
+
+            <div style={{fontSize:12,color:"#91888b",marginBottom:14}}>
+              Showing <strong style={{color:"#31222a"}}>{filtered.length}</strong> of {data.length} initiatives
+            </div>
+
+            {view==="grouped"&&(grouped.length===0
+              ?<div style={{textAlign:"center",padding:"48px",color:"#91888b",fontSize:13}}>No initiatives match your filters.</div>
+              :grouped.map(([grp,rows],gi)=>{
+                const isOpen=expanded===null||expanded===gi;
+                const grpStatuses=rows.map(r=>latestStatus(r));
+                const dominant=["Red","Yellow","Green",""].find(s=>grpStatuses.includes(s))||"";
+                return <div key={gi} style={{marginBottom:12,background:"#fff",borderRadius:12,border:"1px solid #e7e5e5",overflow:"hidden",boxShadow:"0 1px 3px rgba(0,0,0,0.04)"}}>
+                  <div onClick={()=>setExpanded(expanded===gi?null:gi)}
+                    style={{padding:"13px 20px",display:"flex",alignItems:"center",gap:12,cursor:"pointer",borderBottom:isOpen?"1px solid #e7e5e5":"none"}}
+                    onMouseEnter={e=>e.currentTarget.style.background="rgba(207,0,144,0.04)"}
+                    onMouseLeave={e=>e.currentTarget.style.background="#fff"}>
+                    <span style={{fontSize:12,color:"#b9b2b4",minWidth:14}}>{isOpen?"▾":"▸"}</span>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:14,fontWeight:700,color:"#1d0c17"}}>{grp}</div>
+                      <div style={{fontSize:11,color:"#91888b",marginTop:2}}>{rows.length} initiative{rows.length!==1?"s":""}</div>
+                    </div>
+                    <div style={{display:"flex",gap:5}}>{grpStatuses.map((s,i)=><StatusDot key={i} s={s} size={8}/>)}</div>
+                    <StatusBadge s={dominant}/>
+                  </div>
+                  {isOpen&&rows.map((r,ri)=>{
+                    const s=latestStatus(r);
+                    const isHold=r.initiative.toLowerCase().includes("on hold");
+                    const cfg=STATUS_STYLES[s]||STATUS_STYLES[""];
+                    return <div key={ri} style={{padding:"13px 20px 13px 46px",borderBottom:ri<rows.length-1?"1px solid #f1f0ec":"none",background:isHold?"#fafaf9":"#fff"}}>
+                      <div style={{display:"grid",gridTemplateColumns:"1fr auto",gap:12,alignItems:"start"}}>
+                        <div>
+                          <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+                            {isHold&&<span style={{fontSize:10,fontWeight:700,color:"#91888b",background:"#e7e5e5",padding:"1px 7px",borderRadius:4,border:"1px solid #cfcbcc"}}>ON HOLD</span>}
+                            <span style={{fontSize:13,fontWeight:600,color:isHold?"#91888b":"#1d0c17"}}>{r.initiative.replace(/^ON HOLD:\s*/i,"")}</span>
+                          </div>
+                          <div style={{fontSize:11,color:"#91888b",marginBottom:6}}>{r.goal}</div>
+                          <div style={{display:"flex",flexWrap:"wrap",gap:6,alignItems:"center",marginBottom:r.q1Note?7:0}}>
+                            <span style={{fontSize:11,color:"#746a6d",background:"#f1f0ec",padding:"2px 8px",borderRadius:5}}>👤 PLT: {r.plt}</span>
+                            <span style={{fontSize:11,color:"#746a6d",background:"#f1f0ec",padding:"2px 8px",borderRadius:5}}>EPLT: {r.eplt}</span>
+                            <span style={{fontSize:11,color:"#746a6d",background:"#f1f0ec",padding:"2px 8px",borderRadius:5}}>{r.func}</span>
+                          </div>
+                          {r.q1Note&&<div style={{fontSize:11,color:"#5c4d53",background:"#f9f8f7",border:`1px solid ${cfg.border}`,borderRadius:7,padding:"7px 10px",lineHeight:1.5}}>
+                            <span style={{fontWeight:700,color:cfg.text}}>Latest: </span>{r.q1Note}
+                          </div>}
+                        </div>
+                        <div style={{display:"flex",flexDirection:"column",alignItems:"flex-end",gap:8,minWidth:120}}>
+                          <StatusBadge s={s}/>
+                          <div style={{display:"flex",gap:8}}>
+                            <MonthDot s={r.q1Jan} month="Jan"/>
+                            <MonthDot s={r.q1Feb} month="Feb"/>
+                            <MonthDot s={r.q1Mar} month="Mar"/>
+                          </div>
+                        </div>
+                      </div>
+                      <div style={{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:8,marginTop:10}}>
+                        {[["Q1",r.q1KR],["Q2",r.q2KR],["Q3",r.q3KR],["Q4",r.q4KR]].map(([q,kr])=>kr
+                          ?<div key={q} style={{background:"#f9f8f7",borderRadius:7,padding:"7px 9px",border:"1px solid #e7e5e5"}}>
+                            <div style={{fontSize:10,fontWeight:700,color:"#cf0090",marginBottom:3}}>{q}</div>
+                            <div style={{fontSize:11,color:"#5c4d53",lineHeight:1.4}}>{kr}</div>
+                          </div>:null
+                        )}
+                      </div>
+                    </div>;
+                  })}
+                </div>;
+              })
+            )}
+
+            {view==="table"&&<div style={{background:"#fff",borderRadius:12,border:"1px solid #b9b2b4",overflow:"hidden"}}>
+              <div style={{overflowX:"auto"}}>
+                <table style={{width:"100%",borderCollapse:"collapse",minWidth:1000}}>
+                  <thead>
+                    <tr style={{background:"#e7e5e5"}}>
+                      {["People Priority","Initiative","Function","PLT Owner","EPLT Owner","Status","Jan","Feb","Q1 Key Result"].map(h=>
+                        <th key={h} style={{fontSize:11,fontWeight:700,color:"#1d0c17",textTransform:"uppercase",letterSpacing:"0.05em",padding:"9px 13px",textAlign:"left",borderBottom:"1px solid #b9b2b4",whiteSpace:"nowrap"}}>{h}</th>
+                      )}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {filtered.length===0
+                      ?<tr><td colSpan={9} style={{padding:"48px",textAlign:"center",color:"#91888b",fontSize:13}}>No initiatives match your filters.</td></tr>
+                      :filtered.map((r,i)=>{
+                        const s=latestStatus(r);
+                        const isHold=r.initiative.toLowerCase().includes("on hold");
+                        return <tr key={i} style={{background:i%2===0?"#fff":"#f9f8f7"}}
+                          onMouseEnter={e=>e.currentTarget.style.background="rgba(207,0,144,0.04)"}
+                          onMouseLeave={e=>e.currentTarget.style.background=i%2===0?"#fff":"#f9f8f7"}>
+                          <td style={{padding:"9px 13px",fontSize:12,fontWeight:600,color:"#4a6fa5",borderBottom:"1px solid #e7e5e5",whiteSpace:"nowrap"}}>{r.priority}</td>
+                          <td style={{padding:"9px 13px",fontSize:12,color:isHold?"#91888b":"#1d0c17",borderBottom:"1px solid #e7e5e5",maxWidth:220,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}} title={r.initiative}>
+                            {isHold&&<span style={{fontSize:9,fontWeight:700,color:"#91888b",background:"#e7e5e5",padding:"1px 5px",borderRadius:3,marginRight:5}}>HOLD</span>}
+                            {r.initiative.replace(/^ON HOLD:\s*/i,"")}
+                          </td>
+                          <td style={{padding:"9px 13px",fontSize:11,color:"#746a6d",borderBottom:"1px solid #e7e5e5",whiteSpace:"nowrap"}}>{r.func}</td>
+                          <td style={{padding:"9px 13px",fontSize:11,color:"#746a6d",borderBottom:"1px solid #e7e5e5",whiteSpace:"nowrap"}}>{r.plt}</td>
+                          <td style={{padding:"9px 13px",fontSize:11,color:"#746a6d",borderBottom:"1px solid #e7e5e5",whiteSpace:"nowrap"}}>{r.eplt}</td>
+                          <td style={{padding:"9px 13px",borderBottom:"1px solid #e7e5e5",whiteSpace:"nowrap"}}><StatusBadge s={s}/></td>
+                          <td style={{padding:"9px 13px",borderBottom:"1px solid #e7e5e5",textAlign:"center"}}><StatusDot s={r.q1Jan} size={10}/></td>
+                          <td style={{padding:"9px 13px",borderBottom:"1px solid #e7e5e5",textAlign:"center"}}><StatusDot s={r.q1Feb} size={10}/></td>
+                          <td style={{padding:"9px 13px",fontSize:11,color:"#5c4d53",borderBottom:"1px solid #e7e5e5",maxWidth:260,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}} title={r.q1KR}>{r.q1KR}</td>
+                        </tr>;
+                      })
+                    }
+                  </tbody>
+                </table>
+              </div>
+            </div>}
+
+            <div style={{marginTop:12,fontSize:11,color:"#b9b2b4",textAlign:"right"}}>
+              Source: People Team Annual Plan 2026 · Owner: Erin Ashton
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    ReactDOM.render(React.createElement(App), document.getElementById("root"));
+  </script>
+</body>
+</html>
