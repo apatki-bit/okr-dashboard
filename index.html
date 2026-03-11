@@ -20,7 +20,7 @@
   <script type="text/babel">
     const { useState, useEffect, useMemo } = React;
 
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxvOSa8mah1WbpEdXmUCtpVj5IWOqwqKpEO8Re2WpzNsUriIAz4jipKUO7hXRSr0KEg/exec";
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyJnDiILrVdaaVkDPt2gy2UaJln_ECxEq4PF5FX-EvVbfmajgQZsBumd6vRJBpoNEk/exec";
 
     const FALLBACK = [
       {lyftObj:"Increase Margin: Control Largest Costs",priority:"Build Workforce Planning Capability",initiative:"Build Long Term WFP Strategy/Execute short term WFP strategy",func:"People Strategy & Programs",plt:"Callie Seidman",eplt:"Erin Ashton",goal:"Create a durable, multi-year strategic WFP framework and implement tactical strategy to meet current talent demands.",annualKR:"Achieve 90% ELT alignment on resource reallocation and maintain <5% budget deviation on critical roles.",q1KR:"Finalize Long-Term WFP Strategy and establish short-term WFP strategy for 2026.",q1Jan:"Yellow",q1Feb:"Yellow",q1Mar:"",q1Note:"With Shana coming on board we have transitioned the Talent Blueprint from conceptual planning to active prioritization.",q2KR:"Execute short-term WFP strategy to fill 75% of critical roles while maintaining <5% budget deviation.",q3KR:"Socialize WFP outputs with 100% of ELT members and achieve 90% alignment on resource reallocation.",q4KR:"Establish 3 key WFP metrics and achieve 100% data quality in dashboards."},
@@ -155,31 +155,20 @@
 
       const doFetch = () => {
         setLiveStatus("loading");
-        const cbName = "jsonpCb_" + Date.now();
-        const script = document.createElement("script");
-        const timer = setTimeout(() => {
-          if (document.body.contains(script)) document.body.removeChild(script);
-          delete window[cbName];
-          setLiveStatus("fallback");
-          setLastFetched(new Date());
-        }, 8000);
-        window[cbName] = (csv) => {
-          clearTimeout(timer);
-          if (document.body.contains(script)) document.body.removeChild(script);
-          delete window[cbName];
-          try {
-            const parsed = parseCSV(csv);
-            if (parsed) {
-              const mapped = mapCSVToData(parsed);
-              if (mapped.length > 0) { setData(mapped); setLiveStatus("live"); }
-              else setLiveStatus("fallback");
-            } else setLiveStatus("fallback");
-          } catch { setLiveStatus("fallback"); }
-          setLastFetched(new Date());
-        };
-        script.src = `${APPS_SCRIPT_URL}?callback=${cbName}`;
-        script.onerror = () => { clearTimeout(timer); delete window[cbName]; setLiveStatus("fallback"); setLastFetched(new Date()); };
-        document.body.appendChild(script);
+        fetch(APPS_SCRIPT_URL)
+          .then(r => r.json())
+          .then(json => {
+            try {
+              const parsed = parseCSV(json.data);
+              if (parsed) {
+                const mapped = mapCSVToData(parsed);
+                if (mapped.length > 0) { setData(mapped); setLiveStatus("live"); }
+                else setLiveStatus("fallback");
+              } else setLiveStatus("fallback");
+            } catch { setLiveStatus("fallback"); }
+            setLastFetched(new Date());
+          })
+          .catch(() => { setLiveStatus("fallback"); setLastFetched(new Date()); });
       };
 
       useEffect(() => { doFetch(); }, []);
